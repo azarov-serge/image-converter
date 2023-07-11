@@ -1,0 +1,29 @@
+version: "3"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    restart: always
+    container_name: api
+    volumes:
+      - ./.env:/opt/app/.env #mount file
+    networks:
+      - image-converter-network
+    depends_on:
+      - rmq
+    # .env / AMQP_HOSTNAME=rmq
+  rmq:
+    image: rabbitmq:3-management
+    restart: always
+    networks:
+      - image-converter-network
+    environment:
+      # .env / AMQP_USER=admin
+      - RABBITMQ_DEFAULT_USER=admin
+      # .env / AMQP_PASSWORD=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+
+networks:
+  image-converter-network:
+    driver: bridge
